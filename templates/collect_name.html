@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Thu thập khuôn mặt</title>
+    <style>
+        /* Thiết lập chiều cao của trang để căn giữa nội dung theo chiều dọc */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Container chính để căn giữa nội dung */
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Căn giữa theo chiều dọc */
+            align-items: center;    /* Căn giữa theo chiều ngang */
+            height: 100%;
+            padding: 20px;
+        }
+
+        /* Tiêu đề */
+        h2 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2em;
+            animation: fadeInDown 1s ease;
+        }
+
+        /* Form container */
+        .form-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            position: relative; /* Để chứa nút trở về */
+            animation: fadeIn 1s ease;
+        }
+
+        /* Các trường nhập liệu */
+        .form-container input[type="text"] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 10px 0 20px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        /* Thay đổi màu viền khi focus */
+        .form-container input[type="text"]:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+
+        /* Nút submit */
+        .form-container input[type="submit"] {
+            width: 100%;
+            background-color: #28a745; /* Màu xanh lá cây */
+            color: white;
+            padding: 14px 20px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hiệu ứng hover cho nút submit */
+        .form-container input[type="submit"]:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Hiệu ứng active khi nhấn nút submit */
+        .form-container input[type="submit"]:active {
+            background-color: #1e7e34;
+            transform: translateY(0px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Nút trở về trang chủ */
+        .back-button {
+            display: block;
+            width: 100%;
+            background-color: #6c757d; /* Màu xám cho nút "Trở về" */
+            color: white;
+            padding: 14px 20px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hiệu ứng hover cho nút trở về */
+        .back-button:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Hiệu ứng active khi nhấn nút trở về */
+        .back-button:active {
+            background-color: #545b62;
+            transform: translateY(0px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Responsive cho thiết bị di động */
+        @media (max-width: 600px) {
+            .form-container {
+                padding: 30px 20px;
+            }
+
+            h2 {
+                font-size: 1.8em;
+            }
+
+            .form-container input[type="submit"],
+            .back-button {
+                font-size: 16px;
+                padding: 12px 18px;
+            }
+        }
+
+        /* Animation cho container */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h2>Nhập tên của bạn để bắt đầu thu thập</h2>
+            <form method="POST">
+                <input type="text" name="name" placeholder="Tên của bạn" required>
+                <input type="submit" value="Bắt đầu thu thập">
+                <!-- Nút Trở về Trang Chủ -->
+                <input type="button" class="back-button" value="Trở về trang chủ" onclick="window.location.href='/'">
+            </form>
+        </div>
+    </div>
+</body>
+</html>

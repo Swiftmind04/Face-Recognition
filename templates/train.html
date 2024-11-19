@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Huấn luyện mô hình</title>
+    <style>
+        /* Thiết lập chiều cao của trang để căn giữa nội dung theo chiều dọc */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Container chính để căn giữa nội dung */
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        /* Tiêu đề */
+        h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        /* Nút trở về trang chủ */
+        #backButton {
+            padding: 12px 25px;
+            font-size: 1em;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            display: none; /* Ẩn nút ban đầu */
+        }
+
+        /* Hiệu ứng hover cho nút trở về */
+        #backButton:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Hiệu ứng active khi nhấn nút trở về */
+        #backButton:active {
+            background-color: #004085;
+            transform: translateY(0px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Spinner tải */
+        .spinner {
+            border: 8px solid #f3f3f3; /* Light grey */
+            border-top: 8px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive cho thiết bị di động */
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            #backButton {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+
+            .spinner {
+                width: 50px;
+                height: 50px;
+                border-width: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="spinner" class="spinner"></div>
+        <h2 id="message">{{ message }}</h2>
+        <button id="backButton" onclick="window.location.href='/'">Trở về trang chủ</button>
+    </div>
+    <script>
+        function checkStatus() {
+            fetch('/train_status')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'completed') {
+                    document.getElementById('message').innerText = 'Huấn luyện hoàn tất!';
+                    document.getElementById('spinner').style.display = 'none';
+                    document.getElementById('backButton').style.display = 'inline-block';
+                } else {
+                    setTimeout(checkStatus, 2000); // Kiểm tra lại sau 2 giây
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('message').innerText = 'Đã xảy ra lỗi trong quá trình huấn luyện.';
+                document.getElementById('spinner').style.display = 'none';
+                document.getElementById('backButton').style.display = 'inline-block';
+            });
+        }
+        checkStatus();
+    </script>
+</body>
+</html>

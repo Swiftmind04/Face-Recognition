@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Thu thập khuôn mặt</title>
+    <style>
+        /* Thiết lập chiều cao của trang để căn giữa nội dung theo chiều dọc */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Container chính để căn giữa nội dung */
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            max-width: 800px; /* Tăng kích thước container */
+            width: 90%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        /* Tiêu đề */
+        h2 {
+            color: #333;
+            margin: 0;
+            text-align: center;
+            font-size: 2em;
+        }
+
+        /* Bộ đếm */
+        .counter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2em;
+            color: #555;
+        }
+
+        /* Khung video */
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 640px; /* Giữ kích thước video */
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-container video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Progress bar */
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 20px;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #007BFF;
+            transition: width 0.5s ease;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h2 {
+                font-size: 1.8em;
+            }
+
+            .counter {
+                font-size: 1em;
+            }
+
+            .progress-bar-container {
+                height: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Đang thu thập khuôn mặt cho {{ name }}</h2>
+        <div class="counter">
+            Đã thu thập: <span id="count">0</span>/100
+        </div>
+        <div class="video-container">
+            <video id="video" autoplay muted></video>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let video = document.getElementById('video');
+        let count = document.getElementById('count');
+        let progressBar = document.getElementById('progress-bar');
+
+        // Yêu cầu quyền truy cập webcam
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+                // Bắt đầu thu thập ảnh
+                let captureInterval = setInterval(() => {
+                    let currentCount = parseInt(count.innerText);
+                    if (currentCount >= 100) {
+                        clearInterval(captureInterval);
+                        stream.getTracks().forEach(track => track.stop());
+                        alert("Hoàn thành thu thập!");
+                        window.location.href = '/';
+                        return;
+                    }
+                    // Chụp ảnh và gửi đến server
+                    let canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    let context = canvas.getContext('2d');
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    let imgData = canvas.toDataURL('image/jpeg');
+                    fetch('/collect_frames', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 'image': imgData })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'completed') {
+                            clearInterval(captureInterval);
+                            stream.getTracks().forEach(track => track.stop());
+                            alert("Hoàn thành thu thập!");
+                            window.location.href = '/';
+                        } else if (data.status === 'collecting') {
+                            count.innerText = data.count;
+                            // Cập nhật progress bar
+                            let percentage = (data.count / 100) * 100;
+                            progressBar.style.width = percentage + '%';
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Lỗi khi thu thập khuôn mặt:', err);
+                        alert("Đã xảy ra lỗi trong quá trình thu thập!");
+                        clearInterval(captureInterval);
+                        stream.getTracks().forEach(track => track.stop());
+                        window.location.href = '/';
+                    });
+                }, 500); // Chụp ảnh mỗi 0.5 giây
+            })
+            .catch(err => {
+                console.error('Lỗi khi truy cập webcam:', err);
+                alert("Không thể truy cập webcam!");
+            });
+    </script>
+</body>
+</html>

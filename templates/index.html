@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Face Recognition App</title>
+    <style>
+        /* Thiết lập chiều cao của trang để căn giữa nội dung theo chiều dọc */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+        }
+
+        /* Container chính để căn giữa nội dung */
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Căn giữa theo chiều dọc */
+            align-items: center;    /* Căn giữa theo chiều ngang */
+            height: 100%;
+            text-align: center;
+        }
+
+        /* Tiêu đề chính */
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 3em;
+            animation: fadeInDown 1s ease;
+        }
+
+        /* Tiêu đề phụ */
+        h2 {
+            color: #555;
+            margin-bottom: 50px;
+            font-size: 1.5em;
+            animation: fadeInUp 1s ease;
+        }
+
+        /* Container chứa các nút */
+        .button-container {
+            display: flex;
+            gap: 20px; /* Khoảng cách giữa các nút */
+        }
+
+        /* Kiểu dáng cho các nút */
+        .button-container button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            color: #fff;
+            background-color: #4CAF50; /* Màu nền xanh lá cây */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Màu nền cho các nút khác nhau */
+        .button-container button:nth-child(1) {
+            background-color: #007BFF; /* Xanh dương cho nút "Thu thập" */
+        }
+
+        .button-container button:nth-child(2) {
+            background-color: #FFC107; /* Vàng cho nút "Huấn luyện" */
+            color: #333;
+        }
+
+        .button-container button:nth-child(3) {
+            background-color: #17A2B8; /* Xanh ngọc cho nút "Nhận diện" */
+        }
+
+        /* Hiệu ứng hover cho các nút */
+        .button-container button:hover {
+            background-color: #0056b3;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Hiệu ứng active khi nhấn nút */
+        .button-container button:active {
+            transform: translateY(1px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Responsive cho thiết bị di động */
+        @media (max-width: 600px) {
+            .button-container {
+                flex-direction: column;
+            }
+
+            .button-container button {
+                width: 80%;
+                margin-bottom: 15px;
+            }
+
+            h1 {
+                font-size: 2.5em;
+                margin-bottom: 5px;
+            }
+
+            h2 {
+                font-size: 1.2em;
+                margin-bottom: 30px;
+            }
+        }
+
+        /* Animation cho tiêu đề */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>NHÓM 3</h1>
+        <h2>Nhận diện khuôn mặt với mạng MTCNN và FaceNet</h2>
+        <div class="button-container">
+            <button onclick="window.location.href='/collect'">Thu thập</button>
+            <button onclick="window.location.href='/train'">Huấn luyện</button>
+            <button onclick="window.location.href='/recognize'">Nhận diện</button>
+        </div>
+    </div>
+</body>
+</html>

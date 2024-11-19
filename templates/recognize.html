@@ -1,0 +1,233 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nhận diện khuôn mặt</title>
+    <style>
+        /* Thiết lập chiều cao của trang để căn giữa nội dung theo chiều dọc */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative; /* Để chứa nút trở về */
+        }
+
+        /* Container chính để căn giữa nội dung */
+        .container {
+            display: flex;
+            flex-direction: row;
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            max-width: 1200px; /* Tăng kích thước container */
+            width: 95%;
+            gap: 50px; /* Tăng khoảng cách giữa video và bảng thông tin */
+            align-items: flex-start;
+        }
+
+        /* Container video */
+        .video-container {
+            position: relative;
+            flex: 2; /* Tăng tỷ lệ không gian cho video */
+        }
+
+        /* Video frame */
+        .video-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        /* Hiệu ứng hover cho video */
+        .video-container img:hover {
+            transform: scale(1.02);
+        }
+
+        /* Container thông tin nhận diện */
+        .info-container {
+            flex: 1; /* Giảm tỷ lệ không gian cho bảng thông tin */
+            width: 100%;
+            max-height: 600px; /* Tăng chiều cao tối đa */
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 12px;
+            padding: 25px;
+            background-color: #fafafa;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Tiêu đề thông tin nhận diện */
+        .info-container h3 {
+            margin-top: 0;
+            color: #333;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+        }
+
+        /* Bảng thông tin nhận diện */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        th, td {
+            padding: 14px;
+            border-bottom: 1px solid #ddd;
+            font-size: 1em;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .video-container, .info-container {
+                width: 100%;
+                max-width: none;
+            }
+
+            .info-container {
+                max-height: 400px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .info-container {
+                padding: 20px;
+            }
+
+            .info-container h3 {
+                font-size: 1.5em;
+                margin-bottom: 20px;
+            }
+
+            th, td {
+                padding: 10px;
+                font-size: 0.9em;
+            }
+        }
+
+        /* Nút Trở Về Trang Chủ */
+        .back-button {
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            padding: 15px 25px;
+            font-size: 1em;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000; /* Đảm bảo nút luôn ở trên cùng */
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .back-button:active {
+            background-color: #004085;
+            transform: translateY(0);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="video-container">
+            <img src="{{ url_for('video_feed') }}" alt="Video Stream">
+        </div>
+        <div class="info-container">
+            <h3>Thông tin nhận diện</h3>
+            <table id="recognition-table">
+                <thead>
+                    <tr>
+                        <th>Tên</th>
+                        <th>Thời gian</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div> 
+    </div>
+    <!-- Nút Trở Về Trang Chủ -->
+    <button class="back-button" onclick="window.location.href='/'">Trở về trang chủ</button>
+
+    <script>
+        function updateRecognitionInfo() {
+            fetch('/recognition_info')
+                .then(response => response.json())
+                .then(data => {
+                    let tableBody = document.querySelector('#recognition-table tbody');
+                    // Xóa các hàng hiện tại
+                    tableBody.innerHTML = '';
+
+                    data.forEach(entry => {
+                        let row = document.createElement('tr');
+
+                        let nameCell = document.createElement('td');
+                        nameCell.innerText = entry.name;
+                        row.appendChild(nameCell);
+
+                        let timeCell = document.createElement('td');
+                        timeCell.innerText = entry.time;
+                        row.appendChild(timeCell);
+
+                        tableBody.appendChild(row);
+                    });
+
+                    // Nếu không có dữ liệu, hiển thị thông báo
+                    if (data.length === 0) {
+                        let row = document.createElement('tr');
+                        let cell = document.createElement('td');
+                        cell.colSpan = 2;
+                        cell.innerText = 'Không có nhận diện nào.';
+                        cell.style.color = '#777';
+                        row.appendChild(cell);
+                        tableBody.appendChild(row);
+                    }
+                })
+                .catch(err => {
+                    console.error('Lỗi khi cập nhật thông tin nhận diện:', err);
+                });
+        }
+
+        // Cập nhật thông tin mỗi giây
+        setInterval(updateRecognitionInfo, 1000);
+
+        // Cập nhật ngay khi trang được tải
+        window.onload = updateRecognitionInfo;
+    </script>
+</body>
+</html>
