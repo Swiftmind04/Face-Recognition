@@ -1,5 +1,4 @@
-
-from flask import Flask, render_template, Response, request, redirect, url_for, jsonify
+from flask import Flask, render_template, Response, request, redirect, url_for, jsonify, send_file
 import cv2
 import torch
 from torchvision import datasets, transforms
@@ -13,6 +12,8 @@ import time
 import base64
 from threading import Lock
 from datetime import datetime
+import csv
+import io
 
 app = Flask(__name__)
 
@@ -288,6 +289,44 @@ def recognition_info():
         # Chuyển dictionary thành list các dict
         recognized_list = [{'name': name, 'time': time} for name, time in recognized_faces.items()]
         return jsonify(recognized_list)
+
+@app.route('/clear_recognition', methods=['POST'])
+def clear_recognition():
+    global recognized_faces
+    try:
+        with recognition_lock:
+            recognized_faces.clear()
+        return jsonify({'status': 'cleared'})
+    except Exception as e:
+        print(f"Lỗi trong clear_recognition: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/export_data', methods=['GET'])
+def export_data():
+    try:
+        with recognition_lock:
+            recognized_list = [{'name': name, 'time': time} for name, time in recognized_faces.items()]
+        
+        # Tạo một đối tượng StringIO để ghi dữ liệu CSV vào bộ nhớ
+        si = io.StringIO()
+        writer = csv.DictWriter(si, fieldnames=['Name', 'Time'])
+        writer.writeheader()
+        for entry in recognized_list:
+            writer.writerow({'Name': entry['name'], 'Time': entry['time']})
+        
+        # Chuyển đổi StringIO thành BytesIO để có thể gửi dưới dạng file tải xuống
+        mem = io.BytesIO()
+        mem.write(si.getvalue().encode('utf-8'))
+        mem.seek(0)
+        
+        # Sửa từ 'attachment_filename' sang 'download_name'
+        return send_file(mem,
+                        mimetype='text/csv',
+                        download_name='data.csv',
+                        as_attachment=True)
+    except Exception as e:
+        print(f"Lỗi trong export_data: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

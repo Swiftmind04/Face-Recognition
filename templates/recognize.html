@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -160,6 +159,51 @@
             transform: translateY(0);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
+        /* Nút "Xóa" và "Xuất Data" */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .action-buttons button {
+            padding: 10px 20px;
+            font-size: 1em;
+            color: #fff;
+            background-color: #28a745; /* Màu xanh lá cho nút "Xóa" */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-buttons button#clear-btn {
+            background-color: #dc3545; /* Màu đỏ cho nút "Xóa" */
+        }
+
+        .action-buttons button#clear-btn:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-buttons button#export-btn {
+            background-color: #17a2b8; /* Màu xanh biển cho nút "Xuất Data" */
+        }
+
+        .action-buttons button#export-btn:hover {
+            background-color: #138496;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-buttons button:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -179,12 +223,18 @@
                 <tbody>
                 </tbody>
             </table>
+            <!-- Nút "Xóa" và "Xuất Data" -->
+            <div class="action-buttons">
+                <button id="clear-btn">Xóa</button>
+                <button id="export-btn">Xuất Data</button>
+            </div>
         </div> 
     </div>
     <!-- Nút Trở Về Trang Chủ -->
     <button class="back-button" onclick="window.location.href='/'">Trở về trang chủ</button>
 
     <script>
+        // Hàm cập nhật thông tin nhận diện
         function updateRecognitionInfo() {
             fetch('/recognition_info')
                 .then(response => response.json())
@@ -228,6 +278,36 @@
 
         // Cập nhật ngay khi trang được tải
         window.onload = updateRecognitionInfo;
+
+        // Xử lý sự kiện khi nhấn nút "Xóa"
+        document.getElementById('clear-btn').addEventListener('click', function(){
+            if(confirm("Bạn có chắc chắn muốn xóa tất cả dữ liệu nhận diện?")) {
+                fetch('/clear_recognition', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.status === 'cleared') {
+                        alert('Đã xóa tất cả dữ liệu nhận diện.');
+                        updateRecognitionInfo();
+                    } else {
+                        alert('Đã xảy ra lỗi khi xóa dữ liệu.');
+                    }
+                })
+                .catch(err => {
+                    console.error('Lỗi khi xóa dữ liệu:', err);
+                    alert('Đã xảy ra lỗi khi xóa dữ liệu.');
+                });
+            }
+        });
+
+        // Xử lý sự kiện khi nhấn nút "Xuất Data"
+        document.getElementById('export-btn').addEventListener('click', function(){
+            window.location.href = '/export_data';
+        });
     </script>
 </body>
 </html>
